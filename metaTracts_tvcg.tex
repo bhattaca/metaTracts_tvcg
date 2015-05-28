@@ -24,7 +24,7 @@
 %% These three lines bring in essential packages: ``mathptmx'' for Type 1
 %% typefaces, ``graphicx'' for inclusion of EPS figures. and ``times''
 %% for proper handling of the times font family.
-
+\usepackage{amssymb}
 \usepackage{mathptmx}
 \usepackage{graphicx}
 \usepackage{times}
@@ -65,22 +65,35 @@
 
 %% Paper title.
 
-\title{Global Illumination for Fun and Profit}
+\title{MetaTracts - A Method for Robust Extraction and Visualization of Carbon Fiber Bundles in Fiber Reinforced Composites}
 
 %% This is how authors are specified in the journal style
 
 %% indicate IEEE Member or Student Member in form indicated below
-\author{Roy G. Biv, Ed Grimley, \textit{Member, IEEE}, and Martha Stewart}
-\authorfooter{
-%% insert punctuation at end of each item
-\item
- Roy G. Biv is with Starbucks Research. E-mail: roy.g.biv@aol.com.
-\item
- Ed Grimley is with Grimley Widgets, Inc.. E-mail: ed.grimley@aol.com.
-\item
- Martha Stewart is with Martha Stewart Enterprises at Microsoft
- Research. E-mail: martha.stewart@marthastewart.com.
+
+\author{Arindam Bhattacharya\thanks{e-mail: arindamb86@gmail.com}\\ %
+	\scriptsize The Ohio State University %
+	\and Christoph Heinzl\thanks{e-mail:christoph.heinzl@fh-wels.at}\\ %
+	\scriptsize University of Applied Sciences - Upper Austria%
+	\and Artem Amirkhanov\thanks{e-mail:artem.amirkhanov@fh-wels.at}\\ %
+	\scriptsize University of Applied Sciences - Upper Austria%
+	\and Johann Kastner\thanks{e-mail:johann.kastner@fh-wels.at}\\ %
+	\scriptsize University of Applied Sciences - Upper Austria%
+	\and Rephael Wenger\thanks{e-mail:wenger@cse.ohio-state.edu}\\ %
+	\scriptsize The Ohio State University
 }
+
+%\author{Arindam Bhattacharya, , and Martha Stewart}
+%\authorfooter{
+%% insert punctuation at end of each item
+%\item
+% Roy G. Biv is with Starbucks Research. E-mail: roy.g.biv@aol.com.
+%\item
+% Ed Grimley is with Grimley Widgets, Inc.. E-mail: ed.grimley@aol.com.
+%\item
+% Martha Stewart is with Martha Stewart Enterprises at Microsoft
+% Research. E-mail: martha.stewart@marthastewart.com.
+%}
 
 %other entries to be set up for journal
 \shortauthortitle{Biv \MakeLowercase{\textit{et al.}}: Global Illumination for Fun and Profit}
@@ -133,21 +146,25 @@ delenit augue duis dolore te feugait nulla facilisi.
 %%%%%%%%%%%%%%%%%%%%%% START OF THE PAPER %%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% Commands
+\newcommand{\mt}{MetaTracts }
+
 \begin{document}
 
 %% The ``\maketitle'' command must be the first command after the
 %% ``\begin{document}'' command. It prepares and prints the title block.
 
 %% the only exception to this rule is the \firstsection command
-\firstsection{Introduction}
+%%\firstsection{Introduction And Motivation}
+
 
 \maketitle
-
-
-\section{Exposition}
-
-\section{Conclusion}
-
+\input {./chapters/IntroAndMotivation.tex}
+\input {./chapters/RelatedWork.tex}
+\input {./chapters/ExtractingMetaTracts.tex}
+\input {./chapters/FiberBundleGeneration.tex}
+\input {./chapters/ExpResults_UserEval.tex}
+\input {./chapters/Param_Conclusions.tex}
 %% if specified like this the section will be committed in review mode
 \acknowledgments{
 The authors wish to thank A, B, C. This work was supported in part by
