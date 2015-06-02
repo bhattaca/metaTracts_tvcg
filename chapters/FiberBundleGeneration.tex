@@ -1,1 +1,75 @@
-\section{Fiber Bundle Generation}
+\section{Fiber Bundle Generation}\label {subsec:fiber-bundles}
+The \mt generated in the previous section represent fragments of fiber bundles. The \mt are clustered in order to extract the final fiber bundles. The clustering process benefits from both the orientation and geometric proximity information inherent in the carbon fiber bundles. Experimentally we found that ``orientation" information was more reliable, while partially overlapping fibers (Figure~\ref{fig:length_distribution}\brac{b}) created problems for ``geometric" proximity based approaches. We also observed that different clustering techniques performed preferably for different measures. 
+Instead of creating a heuristic and artificially combining the orientation and geometric proximity measures, we separated the clustering process. 
+Specifically, we first cluster based on ``orientation". Each orientation cluster is then further subdivided based on ``geometric" proximity.
+The two-step clustering process, helps making the problem more tractable, and the parameters more intuitive to the end users. 
+\subsection{Orientation based clustering}
+\label {subsec:orientation_clustering}
+Before extracting individual fiber bundles, we first separate the \mt into classes based on their major local orientations. To cluster \mt going along similar local directions, we use a spectral embedding technique called Laplacian eigenmaps (originally introduced by Belkin and Niyogi \cite{Belkin01}). An eigenvalue problem is solved to map the manifold embedded in a graph into a lower dimensional space, while preserving the graph structure. 
+Let $G$ be the graph, we compute the eigenvalues and eigenvectors for the generalized eigenvector problem $L\textit{\textbf{f}}=\lambda D\textit{\textbf{f}}$,
+where $D$ is the diagonal weight matrix and $L$ is the Laplacian matrix. The eigenvector \textbf{${f}_{0}$} corresponding to the eigenvalue 0 is left out and the next $m$, {\textbf{${f}_{1}$} through \textbf{${f}_{m}$}} eigenvectors are used to embed in an $m$-dimensional space (see Sec.~\ref{sec:param_choices} for values of m). 
+
+For our problem, each MetaTract is a node in the graph. We adopt a simple \textit{orientation} based measure to define the weight of the edges. Given a pair of MetaTract, the edge weight between two nodes is defined as the cosine of the maximum angle between the local orientations ($N_P$) of all pairs of start points ($C_P$) between the two MetaTracts. The edge weights give a ``distance matrix" representing the distance between each pair of nodes. Using the Belkin and Niyogi algorithm we ``embed" these nodes in a low dimensional space where the Euclidean distance between nodes, approximates the distance between nodes given by the original ``distance matrix". 
+Following this, K-means clustering is employed in the lower dimensional space. Where $K$ is the number of major fiber bundle directions in the woven structure. $K$ is derived from domain knowledge,
+for all our test cases, there are two major fiber bundle directions. 
+Dimensionality reduction provides us some interesting advantages, by handling the case of curved bundles.
+\begin{figure}[htb] 
+	\centering  	
+	\includegraphics[width=\linewidth]{images/clustering.eps}
+	%\includegraphics[width=0.45\textwidth]{imagesMT2014/image_clustering}
+	\caption{Clustering Results: Orientation clustering (a,b,c), Distance clustering (d,e).
+		 (b) Results of K-means clustering ($K=2$) with \mt (nodes) projected to the top three eigenvectors as major axes. (a) \mt belonging to orientation cluster 1 in blue. (c) \mt belonging to orientation cluster 2 in red, \mt in gray (a,c) show context.
+		(d,e) Hierarchical (Distance based) clustering on each orientation cluster. (f) Combined result showing 11 individual extracted clusters. }
+	\label{fig:orientation_clustering}
+	\vskip-0.2cm
+\end{figure} 
+Figure~\ref{fig:orientation_clustering}\brac{b} shows the result of the K-means clustering with the nodes (MetaTracts) projected to the top three eigenvectors as the major axes. As expected there is a clear distinction based on fiber bundle orientation. Figure~\ref{fig:orientation_clustering}\brac{a},\brac{c} shows the \mt colored according to orientation clustering results, in blue and red respectively.
+Each distinct cluster represents \mt belonging to all fiber bundles, along an individual orientation. 
+\subsection{Distance Based Clustering}
+\label{subsec:dist_clustering}
+To subdivide the oriented clusters into individual fiber bundles, we include further information about the geometric proximity between MetaTracts. We use the directed Hausdorff distance for distance based clustering.
+Each MetaTract is represented as a set of points ($C_P$). Formally, the directed Hausdorff distance from point set $P$ to point set $Q$ is defined as 
+$H_{dir}(P,Q) = max_{p \in P} min_{q \in Q} d(p,q)$ .
+The Hausdorff distance is defined as $H(P,Q) = max(H_{dir}(P,Q),H_{dir}(Q,P))$.
+The Hausdorff distance is a metric so $H(P,Q) \le H(P,Q') + H(Q',Q)$ but the directed Hausdorff is not.
+%
+Unfortunately, the Hausdorff distance does not work well for our application. A single fiber bundle is represented as a set of ``overlapping" MetaTracts. For example  Figure~\ref{fig:length_distribution}\brac{b} shows the length distribution of \mt which express the fiber bundle. Consequently, if a MetaTract $P$ covers only part of the fiber bundle covered by $Q$, then $H_{dir}(P,Q)$ will be very small while $H_{dir}(Q,P)$ will be large.
+%
+Thus, $H(P,Q)$ will be large, even though $P$ and $Q$ are in the same fiber bundle.
+Instead of using the Hausdorff distance, $\max(H_{dir}(P,Q),H_{dir}(Q,P)$, we use $\min(H_{dir}(P,Q),H_{dir}(Q,P))$. If $P$ covers only part of the fiber bundle covered by $Q$, then $\min(H_{dir}(P,Q),H_{dir}(Q,P))$ is very small.
+Note that if $P$ and $Q$ overlap but do not cover the same parts of the fiber bundle, then $H_{dir}(P,Q)$ and $H_{dir}(Q,P)$ and $\min(H_{dir}(P,Q),H_{dir}(Q,P))$ will be large.
+% 
+The directed Hausdorff distance is very sensitive to outliers in the data.
+However, because \mt after orientation clustering are constructed using cylinders with similar orientations, they are not plagued by outliers.
+To cluster based on MetaTract proximity, we used single linkage hierarchical clustering.
+Hierarchical clustering has a single parameter $h$, the desired number of clusters.
+Clusters are merged until there are only $h$ clusters left.
+Hierarchical clustering is intuitive since it is easy to trace how clusters are formed and merged.
+Single linkage clustering finds pairs of objects $p \in P$ and $q \in Q$ where $P \neq Q$ which are closer than other such pairs, and merges the containing clusters $P$ and $Q$.
+We found that single linkage hierarchical clustering had two major drawbacks.
+\begin{itemize}
+	\item The clustering might produce some ``small" clusters of just a few MetaTracts.
+	These \mt are anomalies caused by overlapping fibers and did not represent true fiber bundles.
+	\item Second, if two distinct fiber bundles are parallel for some of their length and then separated, they would sometimes be clustered into a single erroneous bundle.
+	This occurs when, a short MetaTract which was parallel to both but did not extend into the separation region could form a link between the two fiber bundles. Causing the fiber bundles to be clustered into a single erroneous bundle.
+\end{itemize}
+
+To address the problem of small clusters, we applied hierarchical clustering and then identified small clusters with few MetaTracts.
+We removed the MetaTracts that were in those clusters from the data set and reapplied hierarchical clustering.
+To address the problem of short MetaTracts joining different fiber bundles by applying hierarchical clustering and then removing the
+shortest tracts (length less than $\eta$ times the median length, set to 0.6) in each bundle. We then reapplied hierarchical clustering.
+We repeated both until a steady state of clusters is reached and no new small fibers can be removed. The results of hierarchically clustering each orientation clusters ( Figure~\ref{fig:orientation_clustering}\brac{a},\brac{c}) are shown in Figure~\ref{fig:orientation_clustering}\brac{d},\brac{e} respectively. The final result of the clustering process is shown in Figure~\ref{fig:orientation_clustering}\brac{f}. Eleven individual clusters have been extracted. Five from orientation cluster 1 (Z-axis) and six from orientation cluster 2 (X-axis).  
+\subsection{Choice of Clustering Techniques}\label{subsec:clus_choice}
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=\linewidth]{images/comparison_all.eps}
+	\caption{Applying only (a) Hierarchical Clustering and (b) Dimensionality reduction followed by K-means clustering, methods for various numbers of clusters(distance measure is minimal directed Hausdorffs).
+		For comparison the results using two-step clustering is in Figure~\ref{fig:orientation_clustering}\brac{f}.}
+	\label{fig:comparison}
+\end{figure} 
+Before settling on the two-step clustering we experimented with using proximity alone, in a single step clustering approach for MetaTracts. 
+Figure~\ref{fig:comparison} shows the results. Figure~\ref{fig:comparison}\brac{a} shows the results of \mt that are hierarchically clustered directly using proximity alone into 10, 15 and finally 20 clusters. 
+As discussed in Sec.~\ref{subsec:dist_clustering} single linkage hierarchical clustering in the presence of overlapping \mt tends to create large erroneous clusters and small (low-cardinality) outliers.
+When number of clusters (parameter $h$ in hierarchical clustering) is 10, two large incorrect clusters are generated and the rest are outliers. As $h$ increases, some appropriate bundles start to form. But even at $h=20$, fiber bundles incorrectly cluster together. For comparison Figure~\ref{fig:orientation_clustering}\brac{f} shows the two-step clustering result. 
+Figure~\ref{fig:comparison}\brac{b} shows the MetaTracts, clustered using K-means clustering by proximity alone, after being embedded in a $m$-dimensional (lower) space. We vary $K$ from 10-20. After the dimensionality reduction, the lower dimensional space does not preserve well the spatial context. As a consequence \mt which are in reality far away are grouped together. Even when k is set to twenty, very few correct fiber bundles are identified.  In comparison the two-step approach described above is simple, robust and extracts fiber bundles correctly.
+\section{Voxelization and surface extraction}

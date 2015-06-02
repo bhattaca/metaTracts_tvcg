@@ -34,19 +34,67 @@ Grid locations where the $R_{H}$ is above a cutoff threshold are marked as regio
 
 \begin{figure}[tb]
 \centering
-\includegraphics[width=\linewidth]{images_pvis/reliable_hessian.eps}
+\includegraphics[width=\linewidth]{images/reliable_hessian.eps}
  \vspace{-1.5em}
-\caption{Reliable Hessians. (a) Colored according to Orientation vector mapped to RGB. (b\added{,c}) 2D slice\added{s} along Z\replacedWith{ and (c) along}{-} and X axis. (d) \replacedWith{Magnified}{Zoom in of the white} region marked in \replacedWith{green square}{(c)}.}
+\caption{Reliable Hessians. (a) \mt colored according to the local orientation vector mapped to RGB color scale. (b,c) 2D slices along Z- and X- axis. (d) Magnified region marked in (c).}
 \label{fig:reliable_hessian}
 \vskip-0.2cm
 \end{figure}
+Figure~\ref{fig:reliable_hessian} shows the intermediate results of local orientation computation.
+The principal direction represented as a unit vector has been mapped to RGB color space.
+Figure~\ref{fig:reliable_hessian}\brac{a} shows the entire data set. 
+Figure~\ref{fig:reliable_hessian}\brac{b},\brac{c} shows 2D slices along the Z- and X-axes respectively. Regions with X- and Z-axis local orientation show predominant red and blue color respectively.   Figure~\ref{fig:reliable_hessian}\brac{d} shows a magnified region of interest. The black regions within bundles are regions where the $R_H$ is less than the threshold and have unreliable local orientation. The bundles are also not uniformly colored as the Hessians and the corresponding principal directions are noisy.
 
-Figure~\ref{fig:reliable_hessian}  shows the intermidiate results of local orientation computation.
-The unit vector representing the principal direction has been mapped to RGB color space.
-
-
- only at locations where $R_{H}$ is greater than the cutoff threshold. The unit vector representing the principal direction has been mapped to RGB color space. Figure~\ref{fig:reliable_hessian}a shows the entire data set. %Regions where the principal direction is parallel to the X axis are red in color, directions parallel to Y are green and those parallel to the Z are blue. 
-Figure~\ref{fig:reliable_hessian}b,c show 2D slices along the Z and X axes respectively. Figure~\ref{fig:reliable_hessian}d shows a magnified region of interest. Note, the dark regions within bundles are regions where the $R_H$ is less than the threshold and are unreliable. The bundles are not uniformly colored and the Hessians and the corresponding directions are noisy.
-
+We indicate some intrinsic differences between DTI and our XCT data. Fiber traces can be generated in DTI using a standard fiber tracking algorithms following the principal direction of diffusion by employing a fourth order Runge-kutta method~\cite{Brun2003}. The principal direction based on the Hessian matrix works best when the tubular structures in the data are well separated from the background. This is not the case for our data. The local orientations at each voxel are inherently noisier.
 \subsection{\mt Properties}\label{subsec:mt_properties}
+Conventional integral curve based techniques cannot be directly used to extract fiber bundle traces from reliable Hessians because of the spurious nature of the Hessian based local orientations.
+Thus instead of building fiber traces, we define an abstract representation of the fibers.
+We start from two key assumptions on the data, specifically ``local orientation" and ``connectivity", while taking into account the adverse effects of noise and low resolution.
+
+This is achieved by interpreting the underlying geometric structure of the fibers as a set of connected cylinders. 
+Hence, we formulate \mt as a coarse and simple approximation of integral curves. In the form of a continuous chain of cylindrical tubes in $\mathbb{R}^3$. \mt traverse the fiber bundles embedded in the original data. Extending the intuition developed above, 
+we devise the following \textit{properties} that the \mt share.
+\begin{enumerate}[noitemsep,nolistsep]
+	\item{\mt are associated with a continuous set of cylinders.}
+	\item{\mt are associated with a start point at a grid vertex.}
+	\item{Individual cylinders in \mt have constant lengths, radii, and start points (which are also grid's vertices).}
+	\item{Individual cylinders in \mt (except the first one) are connected to their previous cylinders at their start point.}
+	\item{Individual cylinders are parallel to the local orientation vector at their start points.}
+\end{enumerate} 
+
 \subsection{\mt Generation}\label{subsec:mt_generation}
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[ width=\linewidth]{images/mt_gen.eps}
+\end{center}
+\caption{MetaTracts generation. (b) \mt generation process. (a) Magnified region in (b). (c) Individual MetaTract cylinder. }
+\label{fig:algo}
+\end{figure}
+In this section we detail the process of generating MetaTracts. Here we explain the process in  $\mathbb{R}^2$, the procedure extends to  $\mathbb{R}^3$ trivially. 
+The output of the last (reliable Hessian) stage is input to the current step. In $\mathbb{R}^2$, each grid location is associated with a unit vector (representing the local orientation) and a reliability measure $R_H$[0,1]. Figure~\ref{fig:algo} shows some key features of MetaTracts. In Figure~\ref{fig:algo}\brac{a},\brac{b} the regions with unreliable Hessians are marked in blue. In $\mathbb{R}^2$ the individual components of \mt are rectangles. Figure~\ref{fig:algo}\brac{c} shows an individual rectangle, let the seed point associated with the MetaTract be grid point $C_{p}$ (property 2 in Sec.~\ref{subsec:mtprop}). The local orientation at $C_p$ as computed in the reliable Hessian stage is $N_P$ and is given by the dark green arrow. The rectangle itself is of length $L$ and radius $R$ (properties 3 and 5 in Section~\ref{subsec:mtprop}). 
+
+We start with an individual rectangle with seed point $C_{p}$, local orientation $N_P$ and dimensions $L$, $R$. The set of grid vertices which are located within the rectangle (green region) in Figure~\ref{fig:algo}\brac{a},\brac{b} but are possible start points for the next cylinder. Among these we first discard the grid points which have unreliable Hessians (marked in blue). These set of grid points are called ``candidate vertices" and are potential start points. Based on the ``local orientation" and ``connectivity" assumptions on our data, we rank all the candidate points. The rank of each candidate point is based on the following characteristics.
+\begin{itemize}
+\item \textit{Orientation similarity}: The local orientation of the start points ($N_p$) for the consecutive cylinders should be similar. 
+\item \textit{Large distance}: The MetaTracts should traverse the data using as few cylinders as possible. Thus the distance between start point ($C_p$) of one cylinder and the start point for the next cylinder should be as large as possible. We measure the distance of each candidate vertex from $C_p$ by projecting the Euclidean distance between them onto $N_p$. For example, in Figure~\ref{fig:algo}\brac{b} the distance is measured as the Euclidean distance between the green and the orange vertices projected on to $N_p$. We refer to this perpendicular projection distance as \textit{`projected\_dist'}. 
+\end{itemize}
+
+We next define a ``priority" for each candidate vertex, based on the above characteristics. For each cylinder in a \mt, we put it's ``candidate vertices" in a priority queue based on Equation \ref{eqn:algo_1}.
+\begin{equation}
+Priority = \gamma_1 e^{(-angle^2 / \alpha^2)} + \gamma_2e^{(-projected\_dist^2 / \beta^2)}
+\label{eqn:algo_1}
+\end{equation}
+$\gamma_1$, $\gamma_2$ are the  weights ($\mathbb{R}_{\ge 0}$)  which decide how the ``priority" depends on the affine combination of the two factors. For all our cases, we use $\gamma_1$ = $1 / 3 $ and $\gamma_2$ = $2 / 3$. In general, we suggest $\gamma_1 +\gamma_2 = 1 $ and $\gamma_1 \leq \gamma_2$. At each iteration, we pick the top element in the priority queue to generate the corresponding cylinder, and repeat the steps. Essentially, Equation~\ref{eqn:algo_1} selects a grid point which is farthest from the current start point and is going in a similar direction. This approach tackles noise/errors in local orientation better than integral curves by looking at multiple choices for vertices and avoiding intra-cell interpolation in an already noisy environment. 
+
+In Figure~\ref{fig:algo}\brac{b} the \textit{orange} grid vertex is selected next and process repeated. The \textit{purple} vertex is in a region of unreliable Hessian and is not selected even though it is further away from the seed point in terms of euclidean distance. If we generate \mt that have erroneous local orientations the size of the candidate vertex set will decrease and are these are removed.
+
+The \mt generated by the above procedure are shown in Figure~\ref{fig:length_distribution}\brac{a}. The \mt are colored with the mean orientation direction mapped to the RGB space. Figure~\ref{fig:length_distribution}\brac{a} also shows a single slice of YZ plane. Consistent orientation is a key intrinsic feature in the data which while indistinct in the original gray scale data, now becomes visually pronounced.
+Figure~\ref{fig:length_distribution}\brac{b} shows the MetaTracts of a particular bundle colored according to their individual length.
+\begin{figure}[htb]
+\centering
+	\includegraphics[width=\linewidth]{images/figure5.eps}
+	\caption{(a) MetaTracts color-coded according to their mean orientations, along with a single slice. (b) Length distribution of individual \mt for a particular bundle (unit for length is grid cube edge length:  $2\mu m$).}
+	\label{fig:length_distribution}
+\end{figure}
+MetaTracts in a given fiber bundle may extend the full length of the bundle and may feature different lengths as well as partial overlaps.
