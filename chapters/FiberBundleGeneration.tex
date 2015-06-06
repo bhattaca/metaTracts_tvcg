@@ -1,5 +1,5 @@
 \section{Fiber Bundle Generation}\label {subsec:fiber-bundles}
-The \mt generated in the previous section represent fragments of fiber bundles. The \mt are clustered in order to extract the final fiber bundles. The clustering process benefits from both the orientation and geometric proximity information inherent in the carbon fiber bundles. Experimentally we found that ``orientation" information was more reliable, while partially overlapping fibers (Figure~\ref{fig:length_distribution}\brac{b}) created problems for ``geometric" proximity based approaches. We also observed that different clustering techniques performed preferably for different measures. 
+The \mt generated in the previous section represent fragments of fiber bundles. The \mt are clustered in order to extract the final fiber bundles. The clustering process benefits from both the orientation and geometric proximity information inherent in the carbon fiber bundles. Experimentally we found that ``orientation" information was more reliable, while partially overlapping fibers (Figure~\ref{fig:length_distribution}) created problems for ``geometric" proximity based approaches. We also observed that different clustering techniques performed preferably for different measures. 
 Instead of creating a heuristic and artificially combining the orientation and geometric proximity measures, we separated the clustering process. 
 Specifically, we first cluster based on ``orientation". Each orientation cluster is then further subdivided based on ``geometric" proximity.
 The two-step clustering process, helps making the problem more tractable, and the parameters more intuitive to the end users. 
@@ -33,7 +33,7 @@ $H_{dir}(P,Q) = max_{p \in P} min_{q \in Q} d(p,q)$ .
 The Hausdorff distance is defined as $H(P,Q) = max(H_{dir}(P,Q),H_{dir}(Q,P))$.
 The Hausdorff distance is a metric so $H(P,Q) \le H(P,Q') + H(Q',Q)$ but the directed Hausdorff is not.
 %
-Unfortunately, the Hausdorff distance does not work well for our application. A single fiber bundle is represented as a set of ``overlapping" MetaTracts. For example  Figure~\ref{fig:length_distribution}\brac{b} shows the length distribution of \mt which express the fiber bundle. Consequently, if a MetaTract $P$ covers only part of the fiber bundle covered by $Q$, then $H_{dir}(P,Q)$ will be very small while $H_{dir}(Q,P)$ will be large.
+Unfortunately, the Hausdorff distance does not work well for our application. A single fiber bundle is represented as a set of ``overlapping" MetaTracts. For example  Figure~\ref{fig:length_distribution} shows the length distribution of \mt which express the fiber bundle. Consequently, if a MetaTract $P$ covers only part of the fiber bundle covered by $Q$, then $H_{dir}(P,Q)$ will be very small while $H_{dir}(Q,P)$ will be large.
 %
 Thus, $H(P,Q)$ will be large, even though $P$ and $Q$ are in the same fiber bundle.
 Instead of using the Hausdorff distance, $\max(H_{dir}(P,Q),H_{dir}(Q,P)$, we use $\min(H_{dir}(P,Q),H_{dir}(Q,P))$. If $P$ covers only part of the fiber bundle covered by $Q$, then $\min(H_{dir}(P,Q),H_{dir}(Q,P))$ is very small.
@@ -58,7 +58,10 @@ To address the problem of small clusters, we applied hierarchical clustering and
 We removed the MetaTracts that were in those clusters from the data set and reapplied hierarchical clustering.
 To address the problem of short MetaTracts joining different fiber bundles by applying hierarchical clustering and then removing the
 shortest tracts (length less than $\eta$ times the median length, set to 0.6) in each bundle. We then reapplied hierarchical clustering.
-We repeated both until a steady state of clusters is reached and no new small fibers can be removed. The results of hierarchically clustering each orientation clusters ( Figure~\ref{fig:orientation_clustering}\brac{a},\brac{c}) are shown in Figure~\ref{fig:orientation_clustering}\brac{d},\brac{e} respectively. The final result of the clustering process is shown in Figure~\ref{fig:orientation_clustering}\brac{f}. Eleven individual clusters have been extracted. Five from orientation cluster 1 (Z-axis) and six from orientation cluster 2 (X-axis).  
+We repeated both until a steady state of clusters is reached and no new small fibers can be removed. The results of hierarchically clustering each orientation clusters ( Figure~\ref{fig:orientation_clustering}\brac{a},\brac{c}) are shown in Figure~\ref{fig:orientation_clustering}\brac{d},\brac{e} respectively.
+ 
+ 
+ The output of the clustering step are the \mt separated into well formed fiber bundles. The final result of the clustering process is shown in Figure~\ref{fig:orientation_clustering}\brac{f}. Eleven individual clusters have been extracted. Five from orientation cluster 1 (Z-axis) and six from orientation cluster 2 (X-axis).  
 \subsection{Choice of Clustering Techniques}\label{subsec:clus_choice}
 \begin{figure}[htb]
 	\centering
@@ -72,4 +75,64 @@ Figure~\ref{fig:comparison} shows the results. Figure~\ref{fig:comparison}\brac{
 As discussed in Sec.~\ref{subsec:dist_clustering} single linkage hierarchical clustering in the presence of overlapping \mt tends to create large erroneous clusters and small (low-cardinality) outliers.
 When number of clusters (parameter $h$ in hierarchical clustering) is 10, two large incorrect clusters are generated and the rest are outliers. As $h$ increases, some appropriate bundles start to form. But even at $h=20$, fiber bundles incorrectly cluster together. For comparison Figure~\ref{fig:orientation_clustering}\brac{f} shows the two-step clustering result. 
 Figure~\ref{fig:comparison}\brac{b} shows the MetaTracts, clustered using K-means clustering by proximity alone, after being embedded in a $m$-dimensional (lower) space. We vary $K$ from 10-20. After the dimensionality reduction, the lower dimensional space does not preserve well the spatial context. As a consequence \mt which are in reality far away are grouped together. Even when k is set to twenty, very few correct fiber bundles are identified.  In comparison the two-step approach described above is simple, robust and extracts fiber bundles correctly.
-\section{Voxelization and surface extraction}
+\subsection {Sampling \mt}\label{subsec:sampling_mt}
+To ensure that the \mt capture the features of all the fiber bundles correctly we uniformly seed the entire volume, which generates a considerably large number of MetaTracts. This increases the time and space requirements of the technique. Specially during orientation clustering which performs eigenvalue and eigenvector computations on large matrices. To ensure that we can handle large datasets and at the same time preserve all features, we uniformly seed the entire volume and generate MetaTracts. We then subsample the \mt and extract fiber bundles from the sub-sampled MetaTracts.
+The sampling algorithm is given in Algo.~\ref{algo:subsample}. Essentially it keeps track of a set of \mt and in each iteration adds the MetaTract furthest from the current set. 
+\begin{algorithm}
+	$S \leftarrow$ set of all \mt\;
+	$n \leftarrow$ number of desired \mt\;
+	Pick random MetaTract $M_1 \in S$\;
+	$S \leftarrow S -\{M_1\}$\;
+	\tcc{Initialization: distances and closest bundle.}
+	\ForEach{MetaTract $M \in S$}{
+		$M.dist \leftarrow$ distance to $M_1$\;
+		$M.closest \leftarrow 1$\;
+	}
+	\For{$i \leftarrow 2$ \KwTo $n$}{
+		Pick the MetaTract $M^* \in S$ with largest $M^*.dist$\;
+		$M_i \leftarrow M^*$\;
+		Compute the distance from $M_i$ to every $M_j$, $j < i$\;
+		$S \leftarrow S - \{M_i\}$\;
+		\ForEach{MetaTract $M \in S$}{
+			$j \leftarrow M.closest$\;
+			\tcc{Note: Since $d$ is a metric, $d(M,M_i) + d(M_i,M_j) \ge d(M,M_j)$
+				or $d(M,M_i) \le d(M_i,M_j) - d(M,M_j)$.\\
+				If $d(M_j,M_i) > 2*d(M,M_j)$, 
+				then $d(M,M_i) \le 2*d(M,M_j) - d(M,M_j) - d(M,M_j)$,
+				so $M_j$ is closer to $M$ than $M_i$}
+			\If{($d(M_j,M_i) < 2*M.dist$)}{
+				\tcc{$M_i$ may be closer to $M$ than $M_j$}
+				Compute $dist(M,M_i)$\;
+				\If{$(dist(M,M_i) < M.dist)$}{
+					$M.dist \leftarrow dist(M, M_i)$\;
+					$M.closest \leftarrow i$\;
+				}
+			}
+		}
+	}
+	\caption{Algorithm to subsample MetaTracts.}
+	\label{algo:subsample}
+\end{algorithm}
+With the sampling step the user can decide the ``resolution" of \mt by setting the parameter $n$ based on their requirements and computational constraints (see Sec.\ref{sec:param_choices}).
+\section{Visualization of \mt}
+\label{sec:vis}
+The output of the clustering step, can be used to visualize the geometric structure of the fiber bundles and answer the general queries itemized in Sec.~\ref{sec:intro}. Apart from the direct \mt visualization, we added three additional extensions which were requested by the domain specialists as highly important and useful. Specifically, 
+\begin{itemize}[noitemsep,nolistsep]
+	\item The first extension is to voxelize the original volume according to the clusters each voxel is associated with.
+	\item The second extension is to extract surfaces (triangle meshes) associated with each fiber bundle. 
+	\item Finally, we added an interactive tool which allows complete visual analysis of the fiber bundles. 
+\end{itemize}
+\subsection{Voxelization and surface extraction}
+To voxelize the entire volume based on the clustering results of the MetaTracts, we take the following ``voting" approach.
+We compute a neighborhood around each voxel. We then create a histogram by  enumerating the number of voxels of each class (cluster) in this neighborhood. The voxel is then assigned to the class with the maximum number of elements in the neighborhood. 
+Surface extraction is often a crucial requirement for post processing of the data. While Marching Cubes\cite{Lorensen1987} remains the most popular technique, other methods specific to ICT data such as MergeSharp~\cite{Bhattacharya2013} which focuses on extracting sharp edges and corners are also used.  
+We extract the corresponding surfaces from voxel data by binarizing the volume per cluster and extracting the isosurface associated with the largest connected component in the input binary volume. 
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=\linewidth]{images/figure8.eps} 
+	\caption{Voxelization and surface extraction. (a) Voxelization of data set 1, the inset shows the \mt after clustering. (b) a single slice along the XY-Plane (c) Two of the extracted meshes together (d) The meshes rendered separately.}
+	\label{fig:crop-16-decomp}
+\end{figure} 
+Figure~\ref{fig:crop-16-decomp}\brac{a} and~\ref{fig:prepreg}\brac{d} show the result of voxelization. Figure~\ref{fig:crop-16-decomp}\brac{b} shows a single slice of the volume along the XY-plane. Figure~\ref{fig:crop-16-decomp}\brac{c},\brac{d} shows examples of extracted meshes.
+
+
