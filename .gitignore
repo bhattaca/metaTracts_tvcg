@@ -25,6 +25,11 @@
 *.aux
 *.log
 *.out
+*.avi
+*.mp4
+
+*.bbl
+*.blg
 
  
 # Logs and databases #
