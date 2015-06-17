@@ -122,7 +122,7 @@ The output of the clustering step, can be used to visualize the geometric struct
 	\item The second extension is to extract surfaces (triangle meshes) associated with each fiber bundle. 
 	\item Finally, we added an interactive tool which allows complete visual analysis of the fiber bundles. 
 \end{itemize}
-\subsection{Voxelization and surface extraction}
+\subsection{Voxelization and surface extraction}\label{subsec:voxel_surf_extraction}
 To voxelize the entire volume based on the clustering results of the MetaTracts, we take the following ``voting" approach.
 We compute a neighborhood around each voxel. We then create a histogram by  enumerating the number of voxels of each class (cluster) in this neighborhood. The voxel is then assigned to the class with the maximum number of elements in the neighborhood. 
 Surface extraction is often a crucial requirement for post processing of the data. While Marching Cubes\cite{Lorensen1987} remains the most popular technique, other methods specific to ICT data such as MergeSharp~\cite{Bhattacharya2013} which focuses on extracting sharp edges and corners are also used.  

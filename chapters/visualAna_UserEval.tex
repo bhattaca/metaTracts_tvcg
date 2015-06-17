@@ -1,17 +1,21 @@
 \section{Interactive Visual Analysis of Fiber Bundles}
+In order to interactively analyze and explore the individual fiber bundles, we have applied the FiberScout visualization concept introduced by Weissenb{\"o}ck et al.~\cite{Weissenbock2014} to the MetaTracts. Figure~\ref{fig:metatracts_fiberscout_workflow} shows the necessary steps to realize the interactive fiber bundles analysis tool.
+During the voxelization process (Sec.~\ref{subsec:voxel_surf_extraction}) a unique identification is assigned to each fiber bundle. Based on these labeled voxel data, we use several ITK\cite{Ibanez2005} filters to calculation the different fiber bundles characteristics. According to~\cite{Weissenbock2014}  we provide the following fiber bundles characteristics: the main diagonal elements of the orientation tensors ($a_{11}$, $a_{22}$, $a_{33}$), spherical coordinates of the orientations ($\varphi$, $\theta$), Cartesian coordinates of the centers ($X_{i}$, $Y_{i}$, $Z_{i}$) and the $volume$. Furthermore, we calculate the x, y, z bounding box dimensions and the major axis length of a fiber bundle. With the combination of labeled voxel data and fiber bundles characteristics the interactive tool can be set up. 
+
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=\linewidth]{images/MetaTractsToFiberScout_workflow.eps}
-	\caption{MetaTracts FiberScout Workflow. \todo{TODO: add more info}}
-	\label{fig:flowchart}
+	\caption{Flow chart of the interactive fiber bundles analysis tool.}
+	\label{fig:metatracts_fiberscout_workflow}
 \end{figure}
 
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=\linewidth]{images/FiberScout_GUI.eps}
-	\caption{The FiberScout's graphical user interface with a loaded MetaTracts approach for a fiber bundle extraction. \todo{TODO: add more info}}
-	\label{fig:flowchart}
+	\caption{The interactive graphical user interface for a detailed analysis fiber bundles generated with a MetaTracts approach. (A) 3D renderer. (B) MetaTracts browser. (C) Parallel coordinates. (D) Scatter plot matrix. \todo{TODO: add more info}}
+	\label{fig:interactive_tool_gui}
 \end{figure}
+
 \section{User evaluation}\label{sec:user_eval}
 \begin{figure}[tb]
 	\centering
