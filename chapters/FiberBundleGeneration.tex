@@ -78,7 +78,7 @@ Figure~\ref{fig:comparison}\brac{b} shows the MetaTracts, clustered using K-mean
 \subsection {Sampling \mt}\label{subsec:sampling_mt}
 To ensure that the \mt capture the features of all the fiber bundles correctly we uniformly seed the entire volume, which generates a considerably large number of MetaTracts. This increases the time and space requirements of the technique. Specially during orientation clustering which performs eigenvalue and eigenvector computations on large matrices. To ensure that we can handle large datasets and at the same time preserve all features, we uniformly seed the entire volume and generate MetaTracts. We then subsample the \mt and extract fiber bundles from the sub-sampled MetaTracts.
 The sampling algorithm is given in Algo.~\ref{algo:subsample}. Essentially it keeps track of a set of \mt and in each iteration adds the MetaTract furthest from the current set. 
-\begin{algorithm}
+\begin{algorithm}[tb]
 	$S \leftarrow$ set of all \mt\;
 	$n \leftarrow$ number of desired \mt\;
 	Pick random MetaTract $M_1 \in S$\;
