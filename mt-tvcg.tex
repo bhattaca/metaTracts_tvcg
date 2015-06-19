@@ -35,6 +35,15 @@
 \usepackage{textcomp}
 
 \newcommand{\todo}[1]{\textcolor{red}{#1}}
+\newcommand{\removed}[1]{}
+\newcommand{\added}[1]{{#1}}
+\newcommand{\replaced}[1]{}
+
+%comment to hide higlighting the revised text
+%\newcommand{\removed}[1]{\textcolor{green}{#1}}
+%\newcommand{\added}[1]{\textcolor{red}{#1}}
+%\newcommand{\replaced}[1]{\textcolor{blue}{#1}}
+\newcommand{\replacedWith}[2]{\replaced{#1}\added{#2}}
 
 %% We encourage the use of mathptmx for consistent usage of times font
 %% throughout the proceedings. However, if you encounter conflicts
