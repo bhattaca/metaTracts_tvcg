@@ -2,11 +2,10 @@
 Extracting \mt consists of two main steps. Initially, a local orientation direction (represented as a unit vector) is computed at each grid location.
 Next, we compute a coarse set of poly-cylinders called \mt which traverses the data constrained by the local orientation directions. Sec.~\ref{subsec:reliable_hessian} describes the procedure to generate Reliable Hessians. Sec.~\ref{subsec:mt_properties}  describes the \mt and their properties. Sec.~\ref{subsec:mt_generation} details the creation of \mt.
 \subsection{Computing Reliable Hessians}\label{subsec:reliable_hessian} 
-The objective of this step is to associate each grid location with a unit vector which represents the orientation in the local neighborhood and a real value [0,1] that represents a measure of reliability of the orientation calculated at the grid location. A reliability score of 0 would mean the local orientation is not credible. While a score of 1 means the vector captures the local orientation inherent in the data with a high confidence
-
-The input to this stage is the original scalar data, which is a uniform lattice grid in $\mathbb{R}^3$. We approximate the local orientation  by eigenvalue analysis of the Hessian matrix applied locally to each voxel.
-The Hessian matrix captures the second-order structures inherent in the intensity (scalar values at grid vertex) variations around each grid location.
-The eigen decomposition of the Hessian matrix gives the eigenvectors which describe the local second-order structure, which represents the local curvature of the image. The eigenvector corresponding the smallest eigenvalue gives the direction along which the curvature is smallest. This direction also termed as the principal direction, coincides with the direction of the tubular structure. 
+The objective of this step is to associate each grid location with a unit vector which represents the orientation in the local neighborhood and a real value [0,1] that represents a measure of reliability of the orientation calculated at the grid location. A reliability score of 0 means the local orientation is not credible and a score of 1 means the local orientation is noisy.
+The input to this stage is the original scalar data, which is an uniform lattice grid in $\mathbb{R}^3$. We approximate the local orientation  by eigenvalue analysis of the Hessian matrix applied locally to each voxel.
+The Hessian matrix captures the local second-order structures inherent in the intensity (scalar values at grid vertex) variations around each grid location.
+The eigen decomposition of the Hessian matrix gives the eigenvectors which represent the local curvature of the image. The eigenvector corresponding the smallest eigenvalue gives the direction along which the curvature is smallest. This direction also termed as the principal direction, coincides with the direction of the tubular structure. 
 
 
 Frangi et al.~\cite{Frangi1998} introduced a process that searches for geometric structures which are tubular. They defined 
@@ -28,7 +27,7 @@ R_{H} = \left\{ \begin{array}{ccc}
 $$
 Variable $s$ is the Frobenius norm of the Hessian matrix. The value of $(1-e^{\frac{-s^2}{2c^2}})$ will be low in regions with no structure. The utility of the vesselness is a little different in our framework than Frangi et al.~\cite{Frangi1998}.
 First, vesselness in biology is computed for different scales because the vessels can be of different sizes. In our case, usually the widths of individual fibers are known a priori.
-Second, and more importantly, we do not have clear tubular structures embedded in a dark contrast matrix such as in blood vessels.
+Secondly, we do not have clear tubular structures embedded in a dark contrast matrix such as in blood vessels.
 Instead, we are trying to associate each grid location  with a probable orientation based on its local second order structure. The $R_{H}$ is interpreted as a reliability measure of the local orientation.
 Grid locations where the $R_{H}$ is above a cutoff threshold are marked as regions with reliable orientations (see Sec.~\ref{sec:param_choices}).
 

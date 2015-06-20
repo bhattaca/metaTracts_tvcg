@@ -1,13 +1,13 @@
 \section{Parameter Choices}\label{sec:param_choices}
 The critical parameters for \mt are $K$ and $h$, where parameter $K$ is used by the K-means during orientation clustering while parameter $h$ which is used by the hierarchical clustering.
 K denotes the number of major fiber bundle directions. This is known a priori or can be estimated by considering the weaving pattern. 
-\begin{figure}[htb]
+\begin{figure}[tb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/lengthDistribution.eps}
 	\caption{(a) Length distribution of individual \mt for a particular bundle (unit for length is grid cube edge length:  $2\mu m$).}
 	\label{fig:length_distribution}
 \end{figure}
-\begin{figure}[htb]
+\begin{figure}[tb]
 	\centering
 	\includegraphics[width=\linewidth,  trim = 0mm 0mm 0mm 00mm, clip]{images/figure9_AMA.eps}
 	\caption{Number of \mt and median, minimum and maximum length of individual MetaTracts in the orientation cluster Figure~\ref{fig:orientation_clustering}\brac{d} when clustered into 10 clusters. The unit for length is the grid cube length. Clusters labeled 2,3,4,5 and 7 all have cardinality less than 10. }
@@ -24,7 +24,7 @@ $\alpha$ and $\beta$ in equation~\ref{eqn:algo_1} decide how quickly the value o
 A key assumption of the method is ``connectivity'' (Sec.~\ref{sec:char_data}).
 If the ``connectivity'' is not satisfied due to noise in the image, then the  generated MetaTracts will be inaccurate. 
 The clustering process also assumes that the fiber bundles have a minimum width.
-\section{Conclusions}
+\section{Conclusions and Future Work}\label{subsec:conclusions}
 In this paper, we introduce a framework to extract and visualize fiber bundles in composite materials. We show that our framework works at comparatively low resolution and with dense fiber arrangements (when extracting single fibers might not be possible). It handles complex fiber patterns such as ``cross overs'' and ``braiding''.
 In addition, we demonstrated a tool to interactively investigate and analyze voxelized fiber bundles generated with the MetaTracts approach.
 

@@ -1,5 +1,6 @@
-\section{Fiber Bundle Generation}\label {subsec:fiber-bundles}
-The \mt generated in the previous section represent fragments of fiber bundles. The \mt are clustered in order to extract the final fiber bundles. The clustering process benefits from both the orientation and geometric proximity information inherent in the carbon fiber bundles. Experimentally we found that ``orientation" information was more reliable, while partially overlapping fibers (Figure~\ref{fig:length_distribution}) created problems for ``geometric" proximity based approaches. We also observed that different clustering techniques performed preferably for different measures. 
+\section{Fiber Bundle Generation}
+\label{subsec:fiber-bundles}
+The \mt generated in the previous section represents fragments of fiber bundles. The \mt are clustered in order to extract the final fiber bundles. The clustering process benefits from both the orientation and geometric proximity information inherent in the carbon fiber bundles. Experimentally we found that ``orientation" information was more reliable, while partially overlapping fibers (Figure~\ref{fig:length_distribution}) created problems for ``geometric" proximity based approaches. We also observed that different clustering techniques performed preferably for different measures. 
 Instead of creating a heuristic and artificially combining the orientation and geometric proximity measures, we separated the clustering process. 
 Specifically, we first cluster based on ``orientation". Each orientation cluster is then further subdivided based on ``geometric" proximity.
 The two-step clustering process, helps making the problem more tractable, and the parameters more intuitive to the end users. 
@@ -47,21 +48,21 @@ Clusters are merged until there are only $h$ clusters left.
 Hierarchical clustering is intuitive since it is easy to trace how clusters are formed and merged.
 Single linkage clustering finds pairs of objects $p \in P$ and $q \in Q$ where $P \neq Q$ which are closer than other such pairs, and merges the containing clusters $P$ and $Q$.
 We found that single linkage hierarchical clustering had two major drawbacks.
-\begin{itemize}
+\begin{itemize}[nolistsep]
 	\item The clustering might produce some ``small" clusters of just a few MetaTracts.
 	These \mt are anomalies caused by overlapping fibers and did not represent true fiber bundles.
-	\item Second, if two distinct fiber bundles are parallel for some of their length and then separated, they would sometimes be clustered into a single erroneous bundle.
-	This occurs when, a short MetaTract which was parallel to both but did not extend into the separation region could form a link between the two fiber bundles. Causing the fiber bundles to be clustered into a single erroneous bundle.
+	\item Second, if two distinct fiber bundles ``ran" parallel for some of their length and then separated, they would sometimes be clustered into a single erroneous bundle.
+	This occurs when a short MetaTract which was parallel to both but did not extend into the separation region forms a link between the two fiber bundles. This causes the fiber bundles to be clustered into a single bundle.
 \end{itemize}
 
 To address the problem of small clusters, we applied hierarchical clustering and then identified small clusters with few MetaTracts.
 We removed the MetaTracts that were in those clusters from the data set and reapplied hierarchical clustering.
-To address the problem of short MetaTracts joining different fiber bundles by applying hierarchical clustering and then removing the
+To address the problem of short MetaTracts joining different fiber bundles we applied hierarchical clustering and then removed the
 shortest tracts (length less than $\eta$ times the median length, set to 0.6) in each bundle. We then reapplied hierarchical clustering.
-We repeated both until a steady state of clusters is reached and no new small fibers can be removed. The results of hierarchically clustering each orientation clusters ( Figure~\ref{fig:orientation_clustering}\brac{a},\brac{c}) are shown in Figure~\ref{fig:orientation_clustering}\brac{d},\brac{e} respectively.
+We repeated both steps until a steady state of clusters was reached and no new small fibers can be removed. The results of hierarchically clustering each orientation cluster ( Figure~\ref{fig:orientation_clustering}\brac{a},\brac{c}) are shown in Figure~\ref{fig:orientation_clustering}\brac{d},\brac{e} respectively.
  
  
- The output of the clustering step are the \mt separated into well formed fiber bundles. The final result of the clustering process is shown in Figure~\ref{fig:orientation_clustering}\brac{f}. Eleven individual clusters have been extracted. Five from orientation cluster 1 (Z-axis) and six from orientation cluster 2 (X-axis).  
+After the clustering step, the \mt are separated into well formed fiber bundles. The final result of the clustering process is shown in Figure~\ref{fig:orientation_clustering}\brac{f}. Eleven individual fiber bundles have been separated. Five fiber bundles were extracted from orientation cluster 1 (Z-axis) and six from orientation cluster 2 (X-axis).  
 \subsection{Choice of Clustering Techniques}\label{subsec:clus_choice}
 \begin{figure}[htb]
 	\centering
@@ -70,14 +71,18 @@ We repeated both until a steady state of clusters is reached and no new small fi
 		For comparison the results using two-step clustering is in Figure~\ref{fig:orientation_clustering}\brac{f}.}
 	\label{fig:comparison}
 \end{figure} 
-Before settling on the two-step clustering we experimented with using proximity alone, in a single step clustering approach for MetaTracts. 
+Before settling on the two-step clustering approach, we experimented with using proximity alone, in a single step clustering approach for MetaTracts. We performed two separate tests. First, we used hierarchical clustering to cluster the MetaTracts. Second, we used K-means to cluster the MetaTracts.
 Figure~\ref{fig:comparison} shows the results. Figure~\ref{fig:comparison}\brac{a} shows the results of \mt that are hierarchically clustered directly using proximity alone into 10, 15 and finally 20 clusters. 
 As discussed in Sec.~\ref{subsec:dist_clustering} single linkage hierarchical clustering in the presence of overlapping \mt tends to create large erroneous clusters and small (low-cardinality) outliers.
 When number of clusters (parameter $h$ in hierarchical clustering) is 10, two large incorrect clusters are generated and the rest are outliers. As $h$ increases, some appropriate bundles start to form. But even at $h=20$, fiber bundles incorrectly cluster together. For comparison Figure~\ref{fig:orientation_clustering}\brac{f} shows the two-step clustering result. 
-Figure~\ref{fig:comparison}\brac{b} shows the MetaTracts, clustered using K-means clustering by proximity alone, after being embedded in a $m$-dimensional (lower) space. We vary $K$ from 10-20. After the dimensionality reduction, the lower dimensional space does not preserve well the spatial context. As a consequence \mt which are in reality far away are grouped together. Even when k is set to twenty, very few correct fiber bundles are identified.  In comparison the two-step approach described above is simple, robust and extracts fiber bundles correctly.
+
+
+Figure~\ref{fig:comparison}\brac{b} shows the MetaTracts, clustered using K-means clustering by proximity alone, after being embedded in a $m$-dimensional (lower) space. We vary $K$ from 10-20. After the dimensionality reduction, the lower dimensional space does not preserve well the spatial context. As a consequence \mt which are in reality far away are grouped together. Even when k is set to twenty, very few correct fiber bundles are identified.  In comparison, the two-step approach described above is simple, robust and extracts fiber bundles correctly.
 \subsection {Sampling \mt}\label{subsec:sampling_mt}
-To ensure that the \mt capture the features of all the fiber bundles correctly we uniformly seed the entire volume, which generates a considerably large number of MetaTracts. This increases the time and space requirements of the technique. Specially during orientation clustering which performs eigenvalue and eigenvector computations on large matrices. To ensure that we can handle large datasets and at the same time preserve all features, we uniformly seed the entire volume and generate MetaTracts. We then subsample the \mt and extract fiber bundles from the sub-sampled MetaTracts.
-The sampling algorithm is given in Algo.~\ref{algo:subsample}. Essentially it keeps track of a set of \mt and in each iteration adds the MetaTract furthest from the current set. 
+To ensure that the \mt capture the features of all the fiber bundles correctly we uniformly seed the entire volume, which generates a considerably large number of MetaTracts. This increases the time and space requirements of the technique. Especially, orientation clustering which performs eigenvalue and eigenvector computations on large matrices. To ensure that we can handle large datasets and at the same time preserve all features, we start by uniformly seeding the entire volume and generating MetaTracts. We then subsample the \mt and  perform clustering and fiber bundle extraction on these sub-sampled MetaTracts.
+The sampling algorithm is given in Algo.~\ref{algo:subsample}. The algorithm  keeps track of a current set of \mt and in each iteration adds the MetaTract furthest from the current set.
+
+Distance between two \mt is measured as the maximum of the minimum distances, between the start points of the cylinders which generate the individual MetaTracts. Computing all pairwise distances is an expensive operation. We bound the distances between a MetaTract to others by maintaining a closest set and compute only when necessary.
 \begin{algorithm}[tb]
 	$S \leftarrow$ set of all \mt\;
 	$n \leftarrow$ number of desired \mt\;
@@ -95,13 +100,7 @@ The sampling algorithm is given in Algo.~\ref{algo:subsample}. Essentially it ke
 		$S \leftarrow S - \{M_i\}$\;
 		\ForEach{MetaTract $M \in S$}{
 			$j \leftarrow M.closest$\;
-			\tcc{Note: Since $d$ is a metric, $d(M,M_i) + d(M_i,M_j) \ge d(M,M_j)$
-				or $d(M,M_i) \le d(M_i,M_j) - d(M,M_j)$.\\
-				If $d(M_j,M_i) > 2*d(M,M_j)$, 
-				then $d(M,M_i) \le 2*d(M,M_j) - d(M,M_j) - d(M,M_j)$,
-				so $M_j$ is closer to $M$ than $M_i$}
 			\If{($d(M_j,M_i) < 2*M.dist$)}{
-				\tcc{$M_i$ may be closer to $M$ than $M_j$}
 				Compute $dist(M,M_i)$\;
 				\If{$(dist(M,M_i) < M.dist)$}{
 					$M.dist \leftarrow dist(M, M_i)$\;
