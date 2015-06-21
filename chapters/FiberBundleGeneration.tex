@@ -14,7 +14,7 @@ For our problem, each MetaTract is a node in the graph. We adopt a simple \texti
 Following this, K-means clustering is employed in the lower dimensional space. Where $K$ is the number of major fiber bundle directions in the woven structure. $K$ is derived from domain knowledge,
 for all our test cases, there are two major fiber bundle directions. 
 Dimensionality reduction provides us some interesting advantages, by handling the case of curved bundles.
-\begin{figure}[htb] 
+\begin{figure}[t] 
 	\centering  	
 	\includegraphics[width=\linewidth]{images/clustering.eps}
 	%\includegraphics[width=0.45\textwidth]{imagesMT2014/image_clustering}
@@ -64,7 +64,7 @@ We repeated both steps until a steady state of clusters was reached and no new s
  
 After the clustering step, the \mt are separated into well formed fiber bundles. The final result of the clustering process is shown in Figure~\ref{fig:orientation_clustering}\brac{f}. Eleven individual fiber bundles have been separated. Five fiber bundles were extracted from orientation cluster 1 (Z-axis) and six from orientation cluster 2 (X-axis).  
 \subsection{Choice of Clustering Techniques}\label{subsec:clus_choice}
-\begin{figure}[htb]
+\begin{figure}[t]
 	\centering
 	\includegraphics[width=\linewidth]{images/comparison_all.eps}
 	\caption{Applying only (a) Hierarchical Clustering and (b) Dimensionality reduction followed by K-means clustering, methods for various numbers of clusters(distance measure is minimal directed Hausdorffs).
@@ -82,8 +82,19 @@ Figure~\ref{fig:comparison}\brac{b} shows the MetaTracts, clustered using K-mean
 To ensure that the \mt capture the features of all the fiber bundles correctly we uniformly seed the entire volume, which generates a considerably large number of MetaTracts. This increases the time and space requirements of the technique. Especially, orientation clustering which performs eigenvalue and eigenvector computations on large matrices. To ensure that we can handle large datasets and at the same time preserve all features, we start by uniformly seeding the entire volume and generating MetaTracts. We then subsample the \mt and  perform clustering and fiber bundle extraction on these sub-sampled MetaTracts.
 The sampling algorithm is given in Algo.~\ref{algo:subsample}. The algorithm  keeps track of a current set of \mt and in each iteration adds the MetaTract furthest from the current set.
 
-Distance between two \mt is measured as the maximum of the minimum distances, between the start points of the cylinders which generate the individual MetaTracts. Computing all pairwise distances is an expensive operation. We bound the distances between a MetaTract to others by maintaining a closest set and compute only when necessary.
-\begin{algorithm}[tb]
+Distance between two \mt is measured as the maximum of the minimum distances, between the start points of the cylinders which generate the individual MetaTracts. 
+Computing all pairwise distances is an expensive operation. We bound the distances between a MetaTract to others by maintaining a closest set and compute only when necessary.
+Note that in step~16 of the algorithm,
+we compute the distance from MetraTract $M$
+to the newly selected MetaTract $M_i$
+only if MetaTract $M_i$ is within distance $2 \times M.dist$ of $M.closest$.
+The idea is that if the distance from $M.closest$ to $M_i$ 
+is more than $2 \times M.dist$, then $M.closest$ is closer to $M$
+than $M_i$ so there is no reason to compute $d(M,M_i)$.
+
+With the sampling step the user can decide the ``resolution" of \mt by setting the parameter $n$ based on their requirements and computational constraints (see Sec.\ref{sec:param_choices}).
+
+\begin{algorithm}[t]
 	$S \leftarrow$ set of all \mt\;
 	$n \leftarrow$ number of desired \mt\;
 	Pick random MetaTract $M_1 \in S$\;
@@ -100,7 +111,7 @@ Distance between two \mt is measured as the maximum of the minimum distances, be
 		$S \leftarrow S - \{M_i\}$\;
 		\ForEach{MetaTract $M \in S$}{
 			$j \leftarrow M.closest$\;
-			\If{($d(M_j,M_i) < 2*M.dist$)}{
+			\If{($d(M_j,M_i) < 2 \times M.dist$)}{
 				Compute $dist(M,M_i)$\;
 				\If{$(dist(M,M_i) < M.dist)$}{
 					$M.dist \leftarrow dist(M, M_i)$\;
@@ -112,7 +123,7 @@ Distance between two \mt is measured as the maximum of the minimum distances, be
 	\caption{Algorithm to subsample MetaTracts.}
 	\label{algo:subsample}
 \end{algorithm}
-With the sampling step the user can decide the ``resolution" of \mt by setting the parameter $n$ based on their requirements and computational constraints (see Sec.\ref{sec:param_choices}).
+
 \section{Visualization of \mt}
 \label{sec:vis}
 The output of the clustering step, can be used to visualize the geometric structure of the fiber bundles and answer the general queries itemized in Sec.~\ref{sec:intro}. Apart from the direct \mt visualization, we added three additional extensions which were requested by the domain specialists as highly important and useful. Specifically, 
@@ -126,12 +137,15 @@ To voxelize the entire volume based on the clustering results of the MetaTracts,
 We compute a neighborhood around each voxel. We then create a histogram by  enumerating the number of voxels of each class (cluster) in this neighborhood. The voxel is then assigned to the class with the maximum number of elements in the neighborhood. 
 Surface extraction is often a crucial requirement for post processing of the data. While Marching Cubes\cite{Lorensen1987} remains the most popular technique, other methods specific to ICT data such as MergeSharp~\cite{Bhattacharya2013} which focuses on extracting sharp edges and corners are also used.  
 We extract the corresponding surfaces from voxel data by binarizing the volume per cluster and extracting the isosurface associated with the largest connected component in the input binary volume. 
-\begin{figure}[htb]
+
+Figure~\ref{fig:crop-16-decomp}\brac{a} and~\ref{fig:prepreg}\brac{d} show the result of voxelization. Figure~\ref{fig:crop-16-decomp}\brac{b} shows a single slice of the volume along the XY-plane. Figure~\ref{fig:crop-16-decomp}\brac{c},\brac{d} shows examples of extracted meshes.
+
+\begin{figure}[t]
 	\centering
 	\includegraphics[width=\linewidth]{images/figure8.eps} 
 	\caption{Voxelization and surface extraction. (a) Voxelization of data set 1, the inset shows the \mt after clustering. (b) a single slice along the XY-Plane (c) Two of the extracted meshes together (d) The meshes rendered separately.}
 	\label{fig:crop-16-decomp}
 \end{figure} 
-Figure~\ref{fig:crop-16-decomp}\brac{a} and~\ref{fig:prepreg}\brac{d} show the result of voxelization. Figure~\ref{fig:crop-16-decomp}\brac{b} shows a single slice of the volume along the XY-plane. Figure~\ref{fig:crop-16-decomp}\brac{c},\brac{d} shows examples of extracted meshes.
+
 
 
