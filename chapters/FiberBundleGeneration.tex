@@ -4,7 +4,7 @@ The \mt generated in the previous section represents fragments of fiber bundles.
 Instead of creating a heuristic and artificially combining the orientation and geometric proximity measures, we separated the clustering process. 
 Specifically, we first cluster based on ``orientation". Each orientation cluster is then further subdivided based on ``geometric" proximity.
 The two-step clustering process, helps making the problem more tractable, and the parameters more intuitive to the end users. 
-\subsection{Orientation based clustering}
+\subsection{Orientation Based clustering}
 \label {subsec:orientation_clustering}
 Before extracting individual fiber bundles, we first separate the \mt into classes based on their major local orientations. To cluster \mt going along similar local directions, we use a spectral embedding technique called Laplacian eigenmaps (originally introduced by Belkin and Niyogi \cite{Belkin01}). An eigenvalue problem is solved to map the manifold embedded in a graph into a lower dimensional space, while preserving the graph structure. 
 Let $G$ be the graph, we compute the eigenvalues and eigenvectors for the generalized eigenvector problem $L\textit{\textbf{f}}=\lambda D\textit{\textbf{f}}$,
@@ -20,7 +20,7 @@ Dimensionality reduction provides us some interesting advantages, by handling th
 	%\includegraphics[width=0.45\textwidth]{imagesMT2014/image_clustering}
 	\caption{Clustering Results: Orientation clustering (a,b,c), Distance clustering (d,e).
 		 (b) Results of K-means clustering ($K=2$) with \mt (nodes) projected to the top three eigenvectors as major axes. (a) \mt belonging to orientation cluster 1 in blue. (c) \mt belonging to orientation cluster 2 in red, \mt in gray (a,c) show context.
-		(d,e) Hierarchical (Distance based) clustering on each orientation cluster. (f) Combined result showing 11 individual extracted clusters. }
+		(d,e) Hierarchical (distance based) clustering on each orientation cluster. (f) Combined result showing 11 individual extracted clusters. }
 	\label{fig:orientation_clustering}
 	\vskip-0.2cm
 \end{figure} 
@@ -30,7 +30,7 @@ Each distinct cluster represents \mt belonging to all fiber bundles, along an in
 \label{subsec:dist_clustering}
 To subdivide the oriented clusters into individual fiber bundles, we include further information about the geometric proximity between MetaTracts. We use the directed Hausdorff distance for distance based clustering.
 Each MetaTract is represented as a set of points ($C_P$). Formally, the directed Hausdorff distance from point set $P$ to point set $Q$ is defined as 
-$H_{dir}(P,Q) = max_{p \in P} min_{q \in Q} d(p,q)$ .
+$H_{dir}(P,Q) = max_{p \in P} min_{q \in Q} d(p,q)$.
 The Hausdorff distance is defined as $H(P,Q) = max(H_{dir}(P,Q),H_{dir}(Q,P))$.
 The Hausdorff distance is a metric so $H(P,Q) \le H(P,Q') + H(Q',Q)$ but the directed Hausdorff is not.
 %
@@ -47,7 +47,7 @@ Hierarchical clustering has a single parameter $h$, the desired number of cluste
 Clusters are merged until there are only $h$ clusters left.
 Hierarchical clustering is intuitive since it is easy to trace how clusters are formed and merged.
 Single linkage clustering finds pairs of objects $p \in P$ and $q \in Q$ where $P \neq Q$ which are closer than other such pairs, and merges the containing clusters $P$ and $Q$.
-We found that single linkage hierarchical clustering had two major drawbacks.
+We found that single linkage hierarchical clustering had two major drawbacks:
 \begin{itemize}[nolistsep]
 	\item The clustering might produce some ``small" clusters of just a few MetaTracts.
 	These \mt are anomalies caused by overlapping fibers and did not represent true fiber bundles.
@@ -67,13 +67,16 @@ After the clustering step, the \mt are separated into well formed fiber bundles.
 \begin{figure}[t]
 	\centering
 	\includegraphics[width=\linewidth]{images/comparison_all.eps}
-	\caption{Applying only (a) Hierarchical Clustering and (b) Dimensionality reduction followed by K-means clustering, methods for various numbers of clusters(distance measure is minimal directed Hausdorffs).
+	\caption{Applying only (a) Hierarchical Clustering and (b) Dimensionality reduction followed by K-means clustering, methods for various numbers of clusters (distance measure is minimal directed Hausdorffs).
 		For comparison the results using two-step clustering is in Figure~\ref{fig:orientation_clustering}\brac{f}.}
 	\label{fig:comparison}
 \end{figure} 
 Before settling on the two-step clustering approach, we experimented with using proximity alone, in a single step clustering approach for MetaTracts. We performed two separate tests. First, we used hierarchical clustering to cluster the MetaTracts. Second, we used K-means to cluster the MetaTracts.
-Figure~\ref{fig:comparison} shows the results. Figure~\ref{fig:comparison}\brac{a} shows the results of \mt that are hierarchically clustered directly using proximity alone into 10, 15 and finally 20 clusters. 
-As discussed in Sec.~\ref{subsec:dist_clustering} single linkage hierarchical clustering in the presence of overlapping \mt tends to create large erroneous clusters and small (low-cardinality) outliers.
+Figure~\ref{fig:comparison} shows the results.
+
+
+Figure~\ref{fig:comparison}\brac{a} shows the results of \mt that are hierarchically clustered directly using proximity alone into 10, 15 and finally 20 clusters. 
+As discussed in Sec.~\ref{subsec:dist_clustering}, single linkage hierarchical clustering in the presence of overlapping \mt tends to create large erroneous clusters and small (low-cardinality) outliers.
 When number of clusters (parameter $h$ in hierarchical clustering) is 10, two large incorrect clusters are generated and the rest are outliers. As $h$ increases, some appropriate bundles start to form. But even at $h=20$, fiber bundles incorrectly cluster together. For comparison Figure~\ref{fig:orientation_clustering}\brac{f} shows the two-step clustering result. 
 
 
@@ -130,7 +133,7 @@ The output of the clustering step, can be used to visualize the geometric struct
 \begin{itemize}[noitemsep,nolistsep]
 	\item The first extension is to voxelize the original volume according to the clusters each voxel is associated with.
 	\item The second extension is to extract surfaces (triangle meshes) associated with each fiber bundle. 
-	\item Finally, we added an interactive tool which allows complete visual analysis of the fiber bundles. 
+	\item Finally, we added an interactive tool which allows a complete visual analysis of the fiber bundles. 
 \end{itemize}
 \subsection{Voxelization and surface extraction}\label{subsec:voxel_surf_extraction}
 To voxelize the entire volume based on the clustering results of the MetaTracts, we take the following ``voting" approach.

@@ -1,6 +1,6 @@
 \section{Extracting \mt}\label{sec:ext_mt}
 Extracting \mt consists of two main steps. Initially, a local orientation direction (represented as a unit vector) is computed at each grid location.
-Next, we compute a coarse set of poly-cylinders called \mt which traverses the data constrained by the local orientation directions. Sec.~\ref{subsec:reliable_hessian} describes the procedure to generate Reliable Hessians. Sec.~\ref{subsec:mt_properties}  describes the \mt and their properties. Sec.~\ref{subsec:mt_generation} details the creation of \mt.
+Next, we compute a coarse set of poly-cylinders called \mt which traverses the data constrained by the local orientation directions. Sec.~\ref{subsec:reliable_hessian} describes the procedure to generate Reliable Hessians. Sec.~\ref{subsec:mt_properties}  describes the \mt and their properties. Sec.~\ref{subsec:mt_generation} details the creation of MetaTracts.
 \subsection{Computing Reliable Hessians}\label{subsec:reliable_hessian} 
 The objective of this step is to associate each grid location with a unit vector which represents the orientation in the local neighborhood and a real value [0,1] that represents a measure of reliability of the orientation calculated at the grid location. A reliability score of 0 means the local orientation is not credible and a score of 1 means the local orientation is noisy.
 The input to this stage is the original scalar data, which is an uniform lattice grid in $\mathbb{R}^3$. We approximate the local orientation  by eigenvalue analysis of the Hessian matrix applied locally to each voxel.
@@ -44,7 +44,7 @@ The principal direction represented as a unit vector has been mapped to RGB colo
 Figure~\ref{fig:reliable_hessian}\brac{a} shows the entire data set. 
 Figure~\ref{fig:reliable_hessian}\brac{b},\brac{c} shows 2D slices along the Z- and X-axes respectively. Regions with X- and Z-axis local orientation show predominant red and blue color respectively.   Figure~\ref{fig:reliable_hessian}\brac{d} shows a magnified region of interest. The black regions within bundles are regions where the $R_H$ is less than the threshold and have unreliable local orientation. The bundles are also not uniformly colored as the Hessians and the corresponding principal directions are noisy.
 
-We indicate some intrinsic differences between DTI and our XCT data. Fiber traces can be generated in DTI using a standard fiber tracking algorithms following the principal direction of diffusion by employing a fourth order Runge-kutta method~\cite{Brun2003}. The principal direction based on the Hessian matrix works best when the tubular structures in the data are well separated from the background. This is not the case for our data. The local orientations at each voxel are inherently noisier.
+We indicate some intrinsic differences between DTI and our XCT data. Fiber traces can be generated in DTI using a standard fiber tracking algorithms following the principal direction of diffusion by employing a fourth order Runge-Kutta method~\cite{Brun2003}. The principal direction based on the Hessian matrix works best when the tubular structures in the data are well separated from the background. This is not the case for our data. The local orientations at each voxel are inherently noisier.
 \subsection{\mt Properties}\label{subsec:mt_properties}
 Conventional integral curve based techniques cannot be directly used to extract fiber bundle traces from reliable Hessians because of the spurious nature of the Hessian based local orientations.
 Thus instead of building fiber traces, we define an abstract representation of the fibers.
@@ -52,7 +52,7 @@ We start from two key assumptions on the data, specifically ``local orientation"
 
 This is achieved by interpreting the underlying geometric structure of the fibers as a set of connected cylinders. 
 Hence, we formulate \mt as a coarse and simple approximation of integral curves. In the form of a continuous chain of cylindrical tubes in $\mathbb{R}^3$. \mt traverse the fiber bundles embedded in the original data. Extending the intuition developed above, 
-we devise the following \textit{properties} that the \mt share.
+we devise the following \textit{properties} that the \mt share:
 \begin{enumerate}[noitemsep,nolistsep]
 	\item{\mt are associated with a continuous set of cylinders.}
 	\item{\mt are associated with a start point at a grid vertex.}
@@ -79,7 +79,7 @@ We start with an individual rectangle with seed point $C_{p}$, local orientation
 \item \textit{Large distance}: The MetaTracts should traverse the data using as few cylinders as possible. Thus the distance between start point ($C_p$) of one cylinder and the start point for the next cylinder should be as large as possible. We measure the distance of each candidate vertex from $C_p$ by projecting the Euclidean distance between them onto $N_p$. For example, in Figure~\ref{fig:algo}\brac{b} the distance is measured as the Euclidean distance between the green and the orange vertices projected on to $N_p$. We refer to this perpendicular projection distance as \textit{`projected\_dist'}. 
 \end{itemize}
 
-We next define a ``priority" for each candidate vertex, based on the above characteristics. For each cylinder in a \mt, we put it's ``candidate vertices" in a priority queue based on Equation \ref{eqn:algo_1}.
+We next define a ``priority" for each candidate vertex, based on the above characteristics. For each cylinder in a MetaTracts, we put it's ``candidate vertices" in a priority queue based on Equation \ref{eqn:algo_1}.
 \begin{equation}
 Priority = \gamma_1 e^{(-angle^2 / \alpha^2)} + \gamma_2e^{(-projected\_dist^2 / \beta^2)}
 \label{eqn:algo_1}
