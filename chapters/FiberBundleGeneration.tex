@@ -4,7 +4,7 @@ The \mt generated in the previous section represents fragments of fiber bundles.
 Instead of creating a heuristic and artificially combining the orientation and geometric proximity measures, we separated the clustering process. 
 Specifically, we first cluster based on ``orientation". Each orientation cluster is then further subdivided based on ``geometric" proximity.
 The two-step clustering process, helps making the problem more tractable, and the parameters more intuitive to the end users. 
-\subsection{Orientation Based clustering}
+\subsection{Orientation Based Clustering}
 \label {subsec:orientation_clustering}
 Before extracting individual fiber bundles, we first separate the \mt into classes based on their major local orientations. To cluster \mt going along similar local directions, we use a spectral embedding technique called Laplacian eigenmaps (originally introduced by Belkin and Niyogi \cite{Belkin01}). An eigenvalue problem is solved to map the manifold embedded in a graph into a lower dimensional space, while preserving the graph structure. 
 Let $G$ be the graph, we compute the eigenvalues and eigenvectors for the generalized eigenvector problem $L\textit{\textbf{f}}=\lambda D\textit{\textbf{f}}$,
