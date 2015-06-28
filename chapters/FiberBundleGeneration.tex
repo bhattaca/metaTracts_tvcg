@@ -10,7 +10,7 @@ Before extracting individual fiber bundles, we first separate the \mt into class
 Let $G$ be the graph, we compute the eigenvalues and eigenvectors for the generalized eigenvector problem $L\textit{\textbf{f}}=\lambda D\textit{\textbf{f}}$,
 where $D$ is the diagonal weight matrix and $L$ is the Laplacian matrix. The eigenvector \textbf{${f}_{0}$} corresponding to the eigenvalue 0 is left out and the next $m$, {\textbf{${f}_{1}$} through \textbf{${f}_{m}$}} eigenvectors are used to embed in an $m$-dimensional space (see Sec.~\ref{sec:param_choices} for values of m). 
 
-For our problem, each MetaTract is a node in the graph. We adopt a simple \textit{orientation} based measure to define the weight of the edges. Given a pair of MetaTract, the edge weight between two nodes is defined as the cosine of the maximum angle between the local orientations ($N_P$) of all pairs of start points ($C_P$) between the two MetaTracts. The edge weights give a ``distance matrix" representing the distance between each pair of nodes. Using the Belkin and Niyogi algorithm we ``embed" these nodes in a low dimensional space where the Euclidean distance between nodes, approximates the distance between nodes given by the original ``distance matrix". 
+In our problem, each MetaTract is a node in the graph. We adopt a simple \textit{orientation} based measure to define the weight of the edges. Given a pair of MetaTract, the edge weight between two nodes is defined as the cosine of the maximum angle between the local orientations ($N_P$) of all pairs of start points ($C_P$) between the two MetaTracts. The edge weights give a ``distance matrix" representing the distance between each pair of nodes. Using the Belkin and Niyogi algorithm we ``embed" these nodes in a low dimensional space where the Euclidean distance between nodes, approximates the distance between nodes given by the original ``distance matrix". 
 Following this, K-means clustering is employed in the lower dimensional space. Where $K$ is the number of major fiber bundle directions in the woven structure. $K$ is derived from domain knowledge,
 for all our test cases, there are two major fiber bundle directions. 
 Dimensionality reduction provides us some interesting advantages, by handling the case of curved bundles.
@@ -34,10 +34,10 @@ $H_{dir}(P,Q) = max_{p \in P} min_{q \in Q} d(p,q)$.
 The Hausdorff distance is defined as $H(P,Q) = max(H_{dir}(P,Q),H_{dir}(Q,P))$.
 The Hausdorff distance is a metric so $H(P,Q) \le H(P,Q') + H(Q',Q)$ but the directed Hausdorff is not.
 %
-Unfortunately, the Hausdorff distance does not work well for our application. A single fiber bundle is represented as a set of ``overlapping" MetaTracts. For example  Figure~\ref{fig:length_distribution} shows the length distribution of \mt which express the fiber bundle. Consequently, if a MetaTract $P$ covers only part of the fiber bundle covered by $Q$, then $H_{dir}(P,Q)$ will be very small while $H_{dir}(Q,P)$ will be large.
+Unfortunately, the Hausdorff distance does not work well for our application. A single fiber bundle is represented as a set of ``overlapping" MetaTracts. For example  Figure~\ref{fig:length_distribution} shows the length distribution of \mt which express the fiber bundle. Consequently, if a MetaTract $P$ covers only a part of the fiber bundle covered by $Q$, then $H_{dir}(P,Q)$ will be very small while $H_{dir}(Q,P)$ will be large.
 %
 Thus, $H(P,Q)$ will be large, even though $P$ and $Q$ are in the same fiber bundle.
-Instead of using the Hausdorff distance, $\max(H_{dir}(P,Q),H_{dir}(Q,P)$, we use $\min(H_{dir}(P,Q),H_{dir}(Q,P))$. If $P$ covers only part of the fiber bundle covered by $Q$, then $\min(H_{dir}(P,Q),H_{dir}(Q,P))$ is very small.
+Instead of using the Hausdorff distance, $\max(H_{dir}(P,Q),H_{dir}(Q,P)$, we use $\min(H_{dir}(P,Q),H_{dir}(Q,P))$. If $P$ covers only a part of the fiber bundle covered by $Q$, then $\min(H_{dir}(P,Q),H_{dir}(Q,P))$ is very small.
 Note that if $P$ and $Q$ overlap but do not cover the same parts of the fiber bundle, then $H_{dir}(P,Q)$ and $H_{dir}(Q,P)$ and $\min(H_{dir}(P,Q),H_{dir}(Q,P))$ will be large.
 % 
 The directed Hausdorff distance is very sensitive to outliers in the data.
@@ -47,7 +47,7 @@ Hierarchical clustering has a single parameter $h$, the desired number of cluste
 Clusters are merged until there are only $h$ clusters left.
 Hierarchical clustering is intuitive since it is easy to trace how clusters are formed and merged.
 Single linkage clustering finds pairs of objects $p \in P$ and $q \in Q$ where $P \neq Q$ which are closer than other such pairs, and merges the containing clusters $P$ and $Q$.
-We found that single linkage hierarchical clustering had two major drawbacks:
+We found that single linkage hierarchical clustering had two major drawbacks;
 \begin{itemize}[nolistsep]
 	\item The clustering might produce some ``small" clusters of just a few MetaTracts.
 	These \mt are anomalies caused by overlapping fibers and did not represent true fiber bundles.
@@ -57,9 +57,10 @@ We found that single linkage hierarchical clustering had two major drawbacks:
 
 To address the problem of small clusters, we applied hierarchical clustering and then identified small clusters with few MetaTracts.
 We removed the MetaTracts that were in those clusters from the data set and reapplied hierarchical clustering.
-To address the problem of short MetaTracts joining different fiber bundles we applied hierarchical clustering and then removed the
+To address the problem of short MetaTracts joining different fiber bundles, we applied hierarchical clustering and then removed the
 shortest tracts (length less than $\eta$ times the median length, set to 0.6) in each bundle. We then reapplied hierarchical clustering.
-We repeated both steps until a steady state of clusters was reached and no new small fibers can be removed. The results of hierarchically clustering each orientation cluster ( Figure~\ref{fig:orientation_clustering}\brac{a},\brac{c}) are shown in Figure~\ref{fig:orientation_clustering}\brac{d},\brac{e} respectively.
+We repeated both steps until a steady state of clusters was reached and no new small fibers can be removed. 
+The result of hierarchically clustering all the \mt in each orientation cluster ( Figure~\ref{fig:orientation_clustering}\brac{a},\brac{c}) are shown in Figure~\ref{fig:orientation_clustering}\brac{d},\brac{e} respectively.
  
  
 After the clustering step, the \mt are separated into well formed fiber bundles. The final result of the clustering process is shown in Figure~\ref{fig:orientation_clustering}\brac{f}. Eleven individual fiber bundles have been separated. Five fiber bundles were extracted from orientation cluster 1 (Z-axis) and six from orientation cluster 2 (X-axis).  
@@ -71,7 +72,7 @@ After the clustering step, the \mt are separated into well formed fiber bundles.
 		For comparison the results using two-step clustering is in Figure~\ref{fig:orientation_clustering}\brac{f}.}
 	\label{fig:comparison}
 \end{figure} 
-Before settling on the two-step clustering approach, we experimented with using proximity alone, in a single step clustering approach for MetaTracts. We performed two separate tests. First, we used hierarchical clustering to cluster the MetaTracts. Second, we used K-means to cluster the MetaTracts.
+Before settling on the two-step clustering approach, we experimented with using proximity alone in a single step clustering approach for MetaTracts. We performed two separate tests. First, we used hierarchical clustering to cluster the MetaTracts. Second, we used K-means to cluster the MetaTracts.
 Figure~\ref{fig:comparison} shows the results.
 
 
@@ -82,11 +83,13 @@ When number of clusters (parameter $h$ in hierarchical clustering) is 10, two la
 
 Figure~\ref{fig:comparison}\brac{b} shows the MetaTracts, clustered using K-means clustering by proximity alone, after being embedded in a $m$-dimensional (lower) space. We vary $K$ from 10-20. After the dimensionality reduction, the lower dimensional space does not preserve well the spatial context. As a consequence \mt which are in reality far away are grouped together. Even when k is set to twenty, very few correct fiber bundles are identified.  In comparison, the two-step approach described above is simple, robust and extracts fiber bundles correctly.
 \subsection {Sampling \mt}\label{subsec:sampling_mt}
-To ensure that the \mt capture the features of all the fiber bundles correctly we uniformly seed the entire volume, which generates a considerably large number of MetaTracts. This increases the time and space requirements of the technique. Especially, orientation clustering which performs eigenvalue and eigenvector computations on large matrices. To ensure that we can handle large datasets and at the same time preserve all features, we start by uniformly seeding the entire volume and generating MetaTracts. We then subsample the \mt and  perform clustering and fiber bundle extraction on these sub-sampled MetaTracts.
+To ensure that the \mt capture the features of all the fiber bundles correctly we uniformly seed the entire volume, which generates a considerably large number of MetaTracts. This increases the time and space requirements of the technique. \todo{ Orientation clustering which performs eigenvalue and eigenvector computations on large matrices is particualarly resource consuming.} 
+
+To ensure that we can handle large datasets and at the same time preserve all features, we start by uniformly seeding the entire volume and generating MetaTracts. We then subsample the \mt and  perform clustering and fiber bundle extraction on these sub-sampled MetaTracts.
 The sampling algorithm is given in Algo.~\ref{algo:subsample}. The algorithm  keeps track of a current set of \mt and in each iteration adds the MetaTract furthest from the current set.
 
 Distance between two \mt is measured as the maximum of the minimum distances, between the start points of the cylinders which generate the individual MetaTracts. 
-Computing all pairwise distances is an expensive operation. We bound the distances between a MetaTract to others by maintaining a closest set and compute only when necessary.
+Computing all pairwise distances is an expensive operation. We bound the distances between a MetaTract to others by maintaining a closest set and compute distances only when necessary.
 Note that in step~16 of the algorithm,
 we compute the distance from MetraTract $M$
 to the newly selected MetaTract $M_i$

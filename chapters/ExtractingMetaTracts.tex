@@ -25,7 +25,7 @@ R_{H} = \left\{ \begin{array}{ccc}
 (e^{\frac{\mathcal{-R_{B}}^{2}}{2\beta^{2}}}) (1-e^{\frac{-s^2}{2c^2}}) &\mbox{ otherwise}
 \end{array} \right.
 $$
-Variable $s$ is the Frobenius norm of the Hessian matrix. The value of $(1-e^{\frac{-s^2}{2c^2}})$ will be low in regions with no structure. The utility of the vesselness is a little different in our framework than Frangi et al.~\cite{Frangi1998}.
+Variable $s$ is the Frobenius norm of the Hessian matrix. The value of $(1-e^{\frac{-s^2}{2c^2}})$ will be low in regions with no structure. The utility of the vesselness is a little different in our framework than in the work of Frangi et al.~\cite{Frangi1998}.
 First, vesselness in biology is computed for different scales because the vessels can be of different sizes. In our case, usually the widths of individual fibers are known a priori.
 Secondly, we do not have clear tubular structures embedded in a dark contrast matrix such as in blood vessels.
 Instead, we are trying to associate each grid location  with a probable orientation based on its local second order structure. The $R_{H}$ is interpreted as a reliability measure of the local orientation.
@@ -33,8 +33,7 @@ Grid locations where the $R_{H}$ is above a cutoff threshold are marked as regio
 
 \begin{figure}[tb]
 \centering
-\includegraphics[width=\linewidth]{images/reliable_hessian.eps}
- \vspace{-1.5em}
+\includegraphics[width=\linewidth]{images/reliable_hessian2row.eps}
 \caption{Reliable Hessians. (a) \mt colored according to the local orientation vector mapped to RGB color scale. (b,c) 2D slices along Z- and X- axis. (d) Magnified region marked in (c).}
 \label{fig:reliable_hessian}
 \vskip-0.2cm
@@ -52,7 +51,7 @@ We start from two key assumptions on the data, specifically ``local orientation"
 
 This is achieved by interpreting the underlying geometric structure of the fibers as a set of connected cylinders. 
 Hence, we formulate \mt as a coarse and simple approximation of integral curves. In the form of a continuous chain of cylindrical tubes in $\mathbb{R}^3$. \mt traverse the fiber bundles embedded in the original data. Extending the intuition developed above, 
-we devise the following \textit{properties} that the \mt share:
+we devise the following \textit{properties} that the \mt share;
 \begin{enumerate}[noitemsep,nolistsep]
 	\item{\mt are associated with a continuous set of cylinders.}
 	\item{\mt are associated with a start point at a grid vertex.}
@@ -79,19 +78,19 @@ We start with an individual rectangle with seed point $C_{p}$, local orientation
 \item \textit{Large distance}: The MetaTracts should traverse the data using as few cylinders as possible. Thus the distance between start point ($C_p$) of one cylinder and the start point for the next cylinder should be as large as possible. We measure the distance of each candidate vertex from $C_p$ by projecting the Euclidean distance between them onto $N_p$. For example, in Figure~\ref{fig:algo}\brac{b} the distance is measured as the Euclidean distance between the green and the orange vertices projected on to $N_p$. We refer to this perpendicular projection distance as \textit{`projected\_dist'}. 
 \end{itemize}
 
-We next define a ``priority" for each candidate vertex, based on the above characteristics. For each cylinder in a MetaTracts, we put it's ``candidate vertices" in a priority queue based on Equation \ref{eqn:algo_1}.
+We next define a ``priority" for each candidate vertex, based on the above characteristics. For each cylinder in a MetaTract, we put it's ``candidate vertices" in a priority queue based on Equation \ref{eqn:algo_1}.
 \begin{equation}
 Priority = \gamma_1 e^{(-angle^2 / \alpha^2)} + \gamma_2e^{(-projected\_dist^2 / \beta^2)}
 \label{eqn:algo_1}
 \end{equation}
-$\gamma_1$, $\gamma_2$ are the  weights ($\mathbb{R}_{\ge 0}$)  which decide how the ``priority" depends on the affine combination of the two factors. For all our cases, we use $\gamma_1$ = $1 / 3 $ and $\gamma_2$ = $2 / 3$. In general, we suggest $\gamma_1 +\gamma_2 = 1 $ and $\gamma_1 \leq \gamma_2$. At each iteration, we pick the top element in the priority queue to generate the corresponding cylinder, and repeat the steps. Essentially, Equation~\ref{eqn:algo_1} selects a grid point which is farthest from the current start point and is going in a similar direction. This approach tackles noise/errors in local orientation better than integral curves by looking at multiple choices for vertices and avoiding intra-cell interpolation in an already noisy environment. 
+$\gamma_1$, $\gamma_2$ are the  weights ($\mathbb{R}_{\ge 0}$)  which decide how the ``priority" depends on the affine combination of the two factors. For all our cases, we use $\gamma_1$ = $1 / 3 $ and $\gamma_2$ = $2 / 3$. In general, we suggest $\gamma_1 +\gamma_2 = 1 $ and $\gamma_1 \leq \gamma_2$. At each iteration, we pick the top element in the priority queue to generate the corresponding cylinder, and repeat the steps. Essentially, Equation~\ref{eqn:algo_1} selects a grid point which is farthest from the current start point and is going in a similar direction. This approach tackles noise/errors in local orientation better than integral curves by looking at multiple choices for vertex candidates and avoiding intra-cell interpolation in an already noisy environment. 
 
-In Figure~\ref{fig:algo}\brac{b} the \textit{orange} grid vertex is selected next and process repeated. The \textit{purple} vertex is in a region of unreliable Hessian and is not selected even though it is further away from the seed point in terms of euclidean distance. If we generate \mt that have erroneous local orientations the size of the candidate vertex set will decrease and are these are removed.
+In Figure~\ref{fig:algo}\brac{b} the \textit{orange} grid vertex is selected next and process repeated. The \textit{purple} vertex is in a region of unreliable Hessian and is not selected even though it is further away from the seed point in terms of euclidean distance. \todo{If we generate \mt that have erroneous local orientations the size of the candidate vertex set will be small. This will create \mt of small length which are then removed.}
 
-The \mt generated by the above procedure are shown in Figure~\ref{fig:metaTracts}. The \mt are colored with the mean orientation direction mapped to the RGB space. Figure~\ref{fig:metaTracts} also shows a single slice of YZ plane and the XY plane. Consistent orientation is a key intrinsic feature in the data which while indistinct in the original gray scale data, now becomes visually pronounced.
-Figure~\ref{fig:length_distribution} shows the MetaTracts of a particular bundle colored according to their individual length.
+The \mt generated by the above procedure are shown in Figure~\ref{fig:metaTracts}. The \mt are colored with the mean orientation direction mapped to the RGB space. Figure~\ref{fig:metaTracts} also shows a single slice of YZ plane and the XY plane. \todo{Consistent orientation is a key intrinsic feature in our data which was not obvious from the original gray scale images, but becomes visually pronounced in generated \mt.}
 
-MetaTracts in a given fiber bundle may extend the full length of the bundle and may feature different lengths as well as partial overlaps.
+
+Figure~\ref{fig:length_distribution} shows the MetaTracts of a particular bundle colored according to their individual length.\todo{ MetaTracts in a given fiber bundle may extend the full length of the bundle or have different lengths and partial overlaps.}
 
 \begin{figure}[htb]
 \centering

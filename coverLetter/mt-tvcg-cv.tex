@@ -2,23 +2,28 @@
 
 %opening
 \title{MetaTracts - A Method for Robust Extraction and Visualization of Carbon Fiber Bundles in Fiber Reinforced Composites}
-\author{Arindam Bhattacharya, Christoph Heinzl, Johannes Weissenb{\"o}ck,\\Artem Amirkhanov, Johann Kastner, Rephael Wenger}
+%\author{Arindam Bhattacharya, Christoph Heinzl, Johannes Weissenb{\"o}ck,\\Artem Amirkhanov, Johann Kastner, Rephael Wenger}
 
 \begin{document}
 
 \maketitle
 
 \section{Changes and extensions}
-The extended version as presented here, has the following major changes and extensions from the original paper of Bhattacharya et al.~\cite{Bhattacharya2015} 
+The extended version as presented here, has the following major changes and extensions from the original paper of Bhattacharya et al.~\cite{Bhattacharya2015}  presented at IEEE Pacific Visualization 2015.
 \begin{enumerate}
 	\item A sub-sampling algorithm (see section \textit{6.1}).
 	\item Addition of an interactive visualization tool (see section \textit{7}).
 \end{enumerate}
 \paragraph{}
-First, a sub-sampling algorithm has been added to the MetaTracts generation process. The sampling process provides considerable improvements to our space and time requirements. Sampling ensures that even minor features in fiber bundles in our datasets can be faithfully represented without increasing the number of MetaTracts generated.
-Computing distances between MetaTracts is also and expensive process. We perform the sampling in a clever way and a bound on the distance by maintaining a closest set.
+First, a sub-sampling algorithm has been added to the MetaTracts generation process. The sampling process provides considerable improvements to our space and time requirements. 
+To ensure that we can handle large datasets and at the same time preserve all features, we start by uniformly seeding the entire volume and generating MetaTracts. We then subsample the MetaTracts and  perform clustering and fiber bundle extraction on these sub-sampled MetaTracts.
+Computing all pairwise distances between MetaTracts is an expensive operation, which makes the sampling process time consuming.
+We bound the distances between a MetaTract to others by maintaining a closest set and compute distances only when necessary. Thus we provide an efficient sampling process for the MetaTracts.
+
  
-Second, we have added and interactive tool which helps us to perform an extensive  visual analysis on the fiber bundle based on interesting characteristics in a intuitive and simplified way. In addition, we provide a video which demonstrates the workflow starting with the MetaTracts generation from an original X-ray computed tomography scanned carbon fiber reinforced polymer dataset to an detailed analysis of the individual bundles. 
+Second, we have added and interactive tool which helps us to perform an extensive  visual analysis on the fiber bundle based on interesting characteristics in a intuitive and simplified way. 
+
+In addition, we provide a video which demonstrates the workflow starting with the MetaTracts generation from an original X-ray computed tomography scanned carbon fiber reinforced polymer dataset to an detailed analysis of the individual bundles. 
 
 \bibliographystyle{abbrv}
 %%use following if all content of bibtex file should be shown
